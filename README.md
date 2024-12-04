@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: patched-codes/action-autofix@v1
+      - uses: patched-codes/action-autofix@0.0.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
@@ -57,19 +57,17 @@ One of the following is required:
 ### Basic Usage
 
 ```yaml
-- uses: patched-codes/action-autofix@v1
+- uses: patched-codes/action-autofix@0.0.2
   with:
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+    patched_api_key: ${{ secrets.PATCHED_API_KEY }}
 ```
 
 ### Using Custom Model
 
 ```yaml
-- uses: patched-codes/action-autofix@v1
+- uses: patched-codes/action-autofix@0.0.2
   with:
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+    patched_api_key: ${{ secrets.PATCHED_API_KEY }}
     model: "gpt-4"
     client_base_url: "https://api.openai.com/v1"
 ```
@@ -77,10 +75,9 @@ One of the following is required:
 ### High Severity Only
 
 ```yaml
-- uses: patched-codes/action-autofix@v1
+- uses: patched-codes/action-autofix@0.0.2
   with:
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+    patched_api_key: ${{ secrets.PATCHED_API_KEY }}
     severity: "high"
     vulnerability_limit: 5
 ```
