@@ -9,7 +9,7 @@ inputs:
   github_token:
     description: 'GitHub token for creating pull requests'
     required: false
-    default: '${{ secrets.GITHUB_TOKEN }}'
+    default: ${{ github.token }}
   openai_api_key:
     description: 'OpenAI API key for the LLM'
     required: false
@@ -56,7 +56,7 @@ inputs:
 outputs:
   pr_url:
     description: 'URL of the created pull request'
-    value: '${{ steps.autofix.outputs.pr_url }}'
+    value: ${{ steps.autofix.outputs.pr_url }}
 
 runs:
   using: 'composite'
@@ -73,6 +73,7 @@ runs:
         pip install 'patchwork-cli[security]'
 
     - name: Run Autofix
+      id: autofix
       shell: bash
       run: |
         patchwork AutoFix \
