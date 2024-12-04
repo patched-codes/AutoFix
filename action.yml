@@ -66,6 +66,14 @@ runs:
       with:
         python-version: '3.x'
 
+    - name: Set up pip cache
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
     - name: Install dependencies
       shell: bash
       run: |
@@ -76,16 +84,23 @@ runs:
       id: autofix
       shell: bash
       run: |
-        patchwork AutoFix \
-          github_api_key=${{ inputs.github_token }} \
-          ${inputs.openai_api_key:+"openai_api_key=${{ inputs.openai_api_key }}"} \
-          ${inputs.patched_api_key:+"patched_api_key=${{ inputs.patched_api_key }}"} \
-          model=${{ inputs.model }} \
-          client_base_url=${{ inputs.client_base_url }} \
-          vulnerability_limit=${{ inputs.vulnerability_limit }} \
-          severity=${{ inputs.severity }} \
-          compatibility=${{ inputs.compatibility }} \
-          branch_prefix=${{ inputs.branch_prefix }} \
-          disable_branch=${{ inputs.disable_branch }} \
-          disable_pr=${{ inputs.disable_pr }} \
-          force_pr_creation=${{ inputs.force_pr_creation }}
+        args=()
+        args+=("github_api_key=${{ inputs.github_token }}")
+        if [ -n "${{ inputs.openai_api_key }}" ]; then
+          args+=("openai_api_key=${{ inputs.openai_api_key }}")
+        fi
+        if [ -n "${{ inputs.patched_api_key }}" ]; then
+          args+=("patched_api_key=${{ inputs.patched_api_key }}")
+        fi
+        args+=(
+          "model=${{ inputs.model }}"
+          "client_base_url=${{ inputs.client_base_url }}"
+          "vulnerability_limit=${{ inputs.vulnerability_limit }}"
+          "severity=${{ inputs.severity }}"
+          "compatibility=${{ inputs.compatibility }}"
+          "branch_prefix=${{ inputs.branch_prefix }}"
+          "disable_branch=${{ inputs.disable_branch }}"
+          "disable_pr=${{ inputs.disable_pr }}"
+          "force_pr_creation=${{ inputs.force_pr_creation }}"
+        )
+        patchwork AutoFix "${args[@]}"
