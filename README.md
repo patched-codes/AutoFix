@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: your-username/patchwork-autofix@v1
+      - uses: patched-codes/action-autofix@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
@@ -57,7 +57,7 @@ One of the following is required:
 ### Basic Usage
 
 ```yaml
-- uses: your-username/patchwork-autofix@v1
+- uses: patched-codes/action-autofix@v1
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}
     openai_api_key: ${{ secrets.OPENAI_API_KEY }}
@@ -66,7 +66,7 @@ One of the following is required:
 ### Using Custom Model
 
 ```yaml
-- uses: your-username/patchwork-autofix@v1
+- uses: patched-codes/action-autofix@v1
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}
     openai_api_key: ${{ secrets.OPENAI_API_KEY }}
@@ -77,7 +77,7 @@ One of the following is required:
 ### High Severity Only
 
 ```yaml
-- uses: your-username/patchwork-autofix@v1
+- uses: patched-codes/action-autofix@v1
   with:
     github_token: ${{ secrets.GITHUB_TOKEN }}
     openai_api_key: ${{ secrets.OPENAI_API_KEY }}
