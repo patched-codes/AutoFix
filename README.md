@@ -16,7 +16,7 @@ This GitHub Action uses [patchwork-cli](https://docs.patched.codes/patchwork/qui
 name: Security AutoFix
 on:
   schedule:
-    - cron: "0 0 * * *" # Run daily
+    - cron: "0 0 1 * *" # Run once a month
   workflow_dispatch: # Allow manual triggers
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: patched-codes/action-autofix@0.0.2
+      - uses: patched-codes/AutoFix@0.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
@@ -57,7 +57,7 @@ One of the following is required:
 ### Basic Usage
 
 ```yaml
-- uses: patched-codes/action-autofix@0.0.2
+- uses: patched-codes/AutoFix@0.1.0
   with:
     patched_api_key: ${{ secrets.PATCHED_API_KEY }}
 ```
@@ -65,9 +65,9 @@ One of the following is required:
 ### Using Custom Model
 
 ```yaml
-- uses: patched-codes/action-autofix@0.0.2
+- uses: patched-codes/AutoFix@0.1.0
   with:
-    patched_api_key: ${{ secrets.PATCHED_API_KEY }}
+    openai_api_key: ${{ secrets.OPENAI_API_KEY }}
     model: "gpt-4"
     client_base_url: "https://api.openai.com/v1"
 ```
@@ -75,7 +75,7 @@ One of the following is required:
 ### High Severity Only
 
 ```yaml
-- uses: patched-codes/action-autofix@0.0.2
+- uses: patched-codes/AutoFix@0.1.0
   with:
     patched_api_key: ${{ secrets.PATCHED_API_KEY }}
     severity: "high"

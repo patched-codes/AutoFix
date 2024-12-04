@@ -1,4 +1,4 @@
-name: 'Patchwork AutoFix'
+name: 'Patched AutoFix'
 description: 'Run Autofix patchflow using patchwork-cli to automatically fix code vulnerabilities'
 branding:
   icon: 'shield'
@@ -34,7 +34,7 @@ inputs:
   branch_prefix:
     description: 'Prefix for the created branch'
     required: false
-    default: 'patchwork-autofix/'
+    default: 'patched-autofix/'
   disable_branch:
     description: 'Disable creating new branches'
     required: false
@@ -62,9 +62,9 @@ runs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        key: ${{ runner.os }}-pip-patchwork-cli[security]
         restore-keys: |
-          ${{ runner.os }}-pip-
+          ${{ runner.os }}-pip-patchwork-cli[security]
 
     - name: Install dependencies
       shell: bash
