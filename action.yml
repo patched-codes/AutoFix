@@ -17,41 +17,33 @@ inputs:
     description: 'Patched API key for using Patched services'
     required: false
   model:
-    description: 'LLM model to use (default: gpt-3.5-turbo)'
+    description: 'LLM model to use'
     required: false
-    default: 'gpt-3.5-turbo'
   client_base_url:
-    description: 'Base URL for the LLM API (default: https://api.openai.com/v1)'
+    description: 'Base URL for the LLM API'
     required: false
-    default: 'https://api.openai.com/v1'
   vulnerability_limit:
-    description: 'Maximum number of vulnerabilities to fix (default: 10, -1 for no limit)'
+    description: 'Maximum number of vulnerabilities to fix'
     required: false
-    default: '10'
   severity:
-    description: 'Minimum severity level of vulnerabilities to fix (unknown/note/info/warning/low/medium/error/high/critical)'
+    description: 'Minimum severity level of vulnerabilities to fix'
     required: false
-    default: 'medium'
   compatibility:
-    description: 'Minimum compatibility threshold for fixes (unknown/low/medium/high)'
+    description: 'Minimum compatibility threshold for fixes'
     required: false
-    default: 'medium'
   branch_prefix:
     description: 'Prefix for the created branch'
     required: false
-    default: 'autofix'
+    default: 'patchwork-autofix/'
   disable_branch:
     description: 'Disable creating new branches'
     required: false
-    default: 'false'
   disable_pr:
     description: 'Disable creating pull requests'
     required: false
-    default: 'false'
   force_pr_creation:
     description: 'Force push commits to existing PR'
     required: false
-    default: 'false'
 
 outputs:
   pr_url:
@@ -66,7 +58,7 @@ runs:
       with:
         python-version: '3.x'
 
-    - name: Set up pip cache
+    - name: Restore pip cache
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
@@ -80,27 +72,26 @@ runs:
         python -m pip install --upgrade pip
         pip install 'patchwork-cli[security]'
 
+    - name: Generate config
+      shell: bash
+      run: |
+        cat > config.yml << EOF
+        github_api_key: "${{ inputs.github_token }}"
+        $([ -n "${{ inputs.openai_api_key }}" ] && echo "openai_api_key: \"${{ inputs.openai_api_key }}\"")
+        $([ -n "${{ inputs.patched_api_key }}" ] && echo "patched_api_key: \"${{ inputs.patched_api_key }}\"")
+        $([ -n "${{ inputs.model }}" ] && echo "model: \"${{ inputs.model }}\"")
+        $([ -n "${{ inputs.client_base_url }}" ] && echo "client_base_url: \"${{ inputs.client_base_url }}\"")
+        $([ -n "${{ inputs.vulnerability_limit }}" ] && echo "vulnerability_limit: ${{ inputs.vulnerability_limit }}")
+        $([ -n "${{ inputs.severity }}" ] && echo "severity: \"${{ inputs.severity }}\"")
+        $([ -n "${{ inputs.compatibility }}" ] && echo "compatibility: \"${{ inputs.compatibility }}\"")
+        $([ -n "${{ inputs.branch_prefix }}" ] && echo "branch_prefix: \"${{ inputs.branch_prefix }}\"")
+        $([ -n "${{ inputs.disable_branch }}" ] && echo "disable_branch: ${{ inputs.disable_branch }}")
+        $([ -n "${{ inputs.disable_pr }}" ] && echo "disable_pr: ${{ inputs.disable_pr }}")
+        $([ -n "${{ inputs.force_pr_creation }}" ] && echo "force_pr_creation: ${{ inputs.force_pr_creation }}")
+        EOF
+
     - name: Run Autofix
       id: autofix
       shell: bash
       run: |
-        args=()
-        args+=("github_api_key=${{ inputs.github_token }}")
-        if [ -n "${{ inputs.openai_api_key }}" ]; then
-          args+=("openai_api_key=${{ inputs.openai_api_key }}")
-        fi
-        if [ -n "${{ inputs.patched_api_key }}" ]; then
-          args+=("patched_api_key=${{ inputs.patched_api_key }}")
-        fi
-        args+=(
-          "model=${{ inputs.model }}"
-          "client_base_url=${{ inputs.client_base_url }}"
-          "vulnerability_limit=${{ inputs.vulnerability_limit }}"
-          "severity=${{ inputs.severity }}"
-          "compatibility=${{ inputs.compatibility }}"
-          "branch_prefix=${{ inputs.branch_prefix }}"
-          "disable_branch=${{ inputs.disable_branch }}"
-          "disable_pr=${{ inputs.disable_pr }}"
-          "force_pr_creation=${{ inputs.force_pr_creation }}"
-        )
-        patchwork AutoFix "${args[@]}"
+        patchwork AutoFix --config config.yml
